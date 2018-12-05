@@ -1,0 +1,188 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>yshensh</groupId>
+    <artifactId>spark-word-count</artifactId>
+    <name>spark-word-count</name>
+    <packaging>jar</packaging>
+    <version>0.1.0-SNAPSHOT</version>
+
+    <properties>
+        <smartdata.version>0.1.0-SNAPSHOT</smartdata.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <scala.minor.version>2.10</scala.minor.version>
+        <scala.complete.version>${scala.minor.version}.6</scala.complete.version>
+        <spark.version>1.6.2</spark.version>
+        <!--<kafka.version>0.9.0.1</kafka.version>-->
+        <kafka.version>0.8.2.1</kafka.version>
+        <commons.pool2.version>2.4.2</commons.pool2.version>
+        <fastjson.version>1.2.30</fastjson.version>
+    </properties>
+
+    <repositories>
+        <!-- list of other repositories -->
+        <repository>
+            <id>SparkPackagesRepo</id>
+            <url>http://dl.bintray.com/spark-packages/maven</url>
+        </repository>
+    </repositories>
+
+    <!-- start real POM -->
+    <dependencies>
+        <!-- Core Scala dependencies -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.complete.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <version>${scala.complete.version}</version>
+        </dependency>
+        <!-- Core Spark dependencies -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_${scala.minor.version}</artifactId>
+            <version>${spark.version}</version>
+            <!--<scope>provided</scope>-->
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming_${scala.minor.version}</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming-kafka_${scala.minor.version}</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>dibbhatt</groupId>
+            <artifactId>kafka-spark-consumer</artifactId>
+            <version>1.0.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>${kafka.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+            <version>${commons.pool2.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
+        </dependency>
+
+        <!-- Testing libraries -->
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_2.11</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+    </dependencies>
+
+    <!-- scala-maven-plugin setup -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.colobu.kafka.HdfsTest</mainClass>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!--<build>-->
+        <!--<sourceDirectory>src/main/scala</sourceDirectory>-->
+        <!--<testSourceDirectory>src/test/scala</testSourceDirectory>-->
+        <!--&lt;!&ndash; To define the plugin version in your parent POM &ndash;&gt;-->
+        <!--<pluginManagement>-->
+            <!--<plugins>-->
+                <!--<plugin>-->
+                    <!--<groupId>net.alchim31.maven</groupId>-->
+                    <!--<artifactId>scala-maven-plugin</artifactId>-->
+                    <!--<version>3.2.1</version>-->
+                <!--</plugin>-->
+                <!--<plugin>-->
+                    <!--<groupId>org.apache.maven.plugins</groupId>-->
+                    <!--<artifactId>maven-compiler-plugin</artifactId>-->
+                    <!--<version>3.1</version>-->
+                <!--</plugin>-->
+            <!--</plugins>-->
+        <!--</pluginManagement>-->
+        <!--&lt;!&ndash; To use the plugin goals in your POM or parent POM &ndash;&gt;-->
+        <!--<plugins>-->
+            <!--<plugin>-->
+                <!--<groupId>net.alchim31.maven</groupId>-->
+                <!--<artifactId>scala-maven-plugin</artifactId>-->
+                <!--<version>3.2.1</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<goals>-->
+                            <!--<goal>compile</goal>-->
+                            <!--<goal>testCompile</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+                <!--<configuration>-->
+                    <!--<scalaVersion>2.11.7</scalaVersion>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+        <!--</plugins>-->
+    <!--</build>-->
+
+</project>
